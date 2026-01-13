@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================================================== -->
+    <!-- TREE VIEW -->
+    <!-- ===================================================== -->
+    <record id="view_pic_ecommerce_order_state_tree" model="ir.ui.view">
+        <field name="name">pic.ecommerce.order.state.tree</field>
+        <field name="model">pic.ecommerce.order.state</field>
+        <field name="arch" type="xml">
+            <tree string="Toàn trình đơn hàng" default_order="update_time desc" create="false" edit="false"
+                  delete="false">
+                <field name="ecommerce_id"/>
+                <field name="name"/>
+                <field name="source" widget="badge" decoration-info="source == 'api'"
+                       decoration-success="source != 'api'"/>
+                <field name="update_time"/>
+                <field name="order_status" widget="badge"
+                       decoration-info="order_status in ('UNPAID', 'TO_CONFIRM_RECEIVE', 'INVOICE_PENDING')"
+                       decoration-warning="order_status in ('TO_PACK', 'TO_SHIP', 'RETRY_SHIP', 'TO_RETURN')"
+                       decoration-primary="order_status in ('READY_TO_SHIP', 'PROCESSED')"
+                       decoration-success="order_status in ('SHIPPED', 'COMPLETED')"
+                       decoration-danger="order_status == 'INCIDENT'"
+                       decoration-muted="order_status in ('IN_CANCEL', 'CANCELLED', 'RETURNED')"/>
+                <field name="response_data" optional="hide" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- FORM VIEW -->
+    <!-- ===================================================== -->
+    <record id="view_pic_ecommerce_order_state_form" model="ir.ui.view">
+        <field name="name">pic.ecommerce.order.state.form</field>
+        <field name="model">pic.ecommerce.order.state</field>
+        <field name="arch" type="xml">
+            <form string="Trạng thái đơn hàng" create="false" edit="false" delete="false">
+                <sheet>
+
+                    <group>
+                        <group>
+                            <field name="ecommerce_id" decoration-bf="1"/>
+                            <field name="source" widget="badge" decoration-info="source == 'api'"
+                                   decoration-success="source != 'api'"/>
+                            <field name="update_time"/>
+                        </group>
+                        <group>
+                            <field name="name"/>
+                            <field name="order_status" widget="badge"
+                                   decoration-info="order_status in ('UNPAID', 'TO_CONFIRM_RECEIVE', 'INVOICE_PENDING')"
+                                   decoration-warning="order_status in ('TO_PACK', 'TO_SHIP', 'RETRY_SHIP', 'TO_RETURN')"
+                                   decoration-primary="order_status in ('READY_TO_SHIP', 'PROCESSED')"
+                                   decoration-success="order_status in ('SHIPPED', 'COMPLETED')"
+                                   decoration-danger="order_status == 'INCIDENT'"
+                                   decoration-muted="order_status in ('IN_CANCEL', 'CANCELLED', 'RETURNED')"/>
+                            <field name="source"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Dữ liệu phản hồi">
+                            <field name="response_data"
+                                   widget="text"
+                                   readonly="1"
+                                   nolabel="1"/>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- SEARCH VIEW -->
+    <!-- ===================================================== -->
+    <record id="view_pic_ecommerce_order_state_search" model="ir.ui.view">
+        <field name="name">pic.ecommerce.order.state.search</field>
+        <field name="model">pic.ecommerce.order.state</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm trạng thái đơn hàng">
+                <field name="ecommerce_id"/>
+                <field name="name" string="Đơn hàng số" filter_domain="[
+                    '|', '|', '|', '|', ('ecommerce_id.name', 'ilike', self), ('ecommerce_id.origin', 'ilike', self), ('ecommerce_id.origin', 'ilike', self), ('ecommerce_id.recipient_phone', 'ilike', self), ('ecommerce_id.recipient_name', 'ilike', self)]"/>
+
+                <field name="order_status"/>
+                <field name="source"/>
+                <field name="update_time"/>
+
+                <separator/>
+
+                <filter string="API"
+                        name="filter_api"
+                        domain="[('source','=','api')]"/>
+
+                <filter string="Webhook"
+                        name="filter_webhook"
+                        domain="[('source','=','webhook')]"/>
+
+                <separator/>
+
+                <filter string="Hôm nay"
+                        name="filter_today"
+                        domain="[
+                            ('update_time','&gt;=',
+                                (context_today()).strftime('%%Y-%%m-%%d 00:00:00')
+                            )
+                        ]"/>
+
+                <filter string="7 ngày gần đây"
+                        name="filter_last_7_days"
+                        domain="[
+                            ('update_time','&gt;=',
+                                (context_today() - datetime.timedelta(days=7)).strftime('%%Y-%%m-%%d 00:00:00')
+                            )
+                        ]"/>
+
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Đơn hàng"
+                            name="group_by_order"
+                            context="{'group_by': 'ecommerce_id'}"/>
+                    <filter string="Trạng thái"
+                            name="group_by_status"
+                            context="{'group_by': 'order_status'}"/>
+                    <filter string="Nguồn"
+                            name="group_by_source"
+                            context="{'group_by': 'source'}"/>
+                    <filter string="Ngày"
+                            name="group_by_day"
+                            context="{'group_by': 'update_time:day'}"/>
+                </group>
+
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- ACTION -->
+    <!-- ===================================================== -->
+    <record id="action_pic_ecommerce_order_state" model="ir.actions.act_window">
+        <field name="name">Toàn trình đơn hàng</field>
+        <field name="res_model">pic.ecommerce.order.state</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ===================================================== -->
+    <!-- MENU -->
+    <!-- ===================================================== -->
+    <menuitem id="menu_pic_ecommerce_order_state"
+              name="Toàn trình đơn hàng"
+              parent="pic_ecommerce_base.menu_pic_ecommere_mgmt"
+              action="action_pic_ecommerce_order_state"
+              sequence="90" groups="base.group_system"/>
+
+</odoo>

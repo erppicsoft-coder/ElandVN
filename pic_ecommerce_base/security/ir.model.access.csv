@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pic_ecommerce_config_sale_user,pic.ecommerce.config sale user,model_pic_ecommerce_config,sales_team.group_sale_salesman_all_leads,1,0,0,0
+access_pic_ecommerce_config_sale_manager,pic.ecommerce.config sale manager,model_pic_ecommerce_config,sales_team.group_sale_manager,1,1,0,0
+access_pic_ecommerce_config_system,pic.ecommerce.config system,model_pic_ecommerce_config,base.group_system,1,1,1,1
+access_pic_ecommerce_session_sale_user,pic.ecommerce.session sale user,model_pic_ecommerce_session,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_order_sale_user,pic.ecommerce.order sale user,model_pic_ecommerce_order,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_order_line_sale_user,pic.ecommerce.order.line sale user,model_pic_ecommerce_order_line,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_order_state_sale_user,pic.ecommerce.order.state sale user,model_pic_ecommerce_order_state,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_return_sale_user,pic.ecommerce.return sale user,model_pic_ecommerce_return,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_return_line_sale_user,pic.ecommerce.return.line sale user,model_pic_ecommerce_return_line,sales_team.group_sale_salesman_all_leads,1,1,1,1
+access_pic_ecommerce_payment_sale_user,pic.ecommerce.payment sale user,model_pic_ecommerce_payment,sales_team.group_sale_salesman_all_leads,1,1,1,1

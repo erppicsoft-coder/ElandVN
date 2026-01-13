@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model='ir.ui.view' id='search_pic_ecommerce_order_pic_ecommerce_nhanhvn'>
+        <field name="name">search_pic_ecommerce_order_pic_ecommerce_nhanhvn</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="inherit_id" ref="pic_ecommerce_base.search_pic_ecommerce_order"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='groupby_source_id']" position="after">
+                <separator/>
+                <filter name="group_by_nhanhvn_order_sale_channel" string="Nhanh.vn Kênh bán hàng"
+                        context="{'group_by':'nhanhvn_order_sale_channel'}"/>
+                <filter name="group_by_nhanhvn_order_status" string="Nhanh.vn Trạng thái đơn hàng"
+                        context="{'group_by':'nhanhvn_order_status'}"/>
+                <filter name="group_by_nhanhvn_order_carrier" string="Nhanh.vn Đơn vị vận chuyển"
+                        context="{'group_by':'nhanhvn_order_carrier'}"/>
+                <filter name="group_by_nhanhvn_order_type" string="Nhanh.vn Loại đơn hàng"
+                        context="{'group_by':'nhanhvn_order_type'}"/>
+                <filter name="group_by_nhanhvn_order_step" string="Nhanh.vn Bước đơn hàng"
+                        context="{'group_by':'nhanhvn_order_step'}"/>
+            </xpath>
+
+            <xpath expr="//filter[@name='filter_order_status_revenue']" position="after">
+                <filter string="Có Origin Order" name="filter_incident"
+                        domain="[('nhanhvn_original_order_id', '!=', False)]"/>
+                  <filter string="Có Return Form" name="filter_incident"
+                        domain="[('nhanhvn_return_from_id', '!=', False)]"/>
+                  <filter string="Có Return" name="filter_incident"
+                        domain="[('nhanhvn_id_return', '!=', False)]"/>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="nhanhvn_id"  filter_domain="[
+                    '|', '|', '|', ('nhanhvn_id', 'ilike', self), ('nhanhvn_original_order_id', 'ilike', self), ('nhanhvn_return_from_id', 'ilike', self), ('nhanhvn_id_return', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+    <record model='ir.ui.view' id='form_pic_ecommerce_order_pic_ecommerce_nhanhvn'>
+        <field name="name">form_pic_ecommerce_order_pic_ecommerce_nhanhvn</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="inherit_id" ref="pic_ecommerce_base.form_pic_ecommerce_order"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='order_states']" position="after">
+                <page name="nhanhvn_info" string="Nhanh.vn" invisible="config_type != 'nhanhvn'">
+                    <group string="Phân tích">
+                        <group>
+                            <field name="nhanhvn_order_sale_channel" readonly="1" string="Kênh bán hàng"/>
+                            <field name="nhanhvn_order_carrier" readonly="1" string="Đơn vị vận chuyển"/>
+                            <field name="nhanhvn_order_type" readonly="1" string="Loại đơn hàng"/>
+                        </group>
+                        <group>
+                            <field name="nhanhvn_order_status" readonly="1" string="Trạng thái đơn hàng"/>
+                            <field name="nhanhvn_order_reason" readonly="1" string="Lý do hủy/trả hàng"/>
+                            <field name="nhanhvn_order_step" readonly="1" string="Bước đơn hàng"/>
+                        </group>
+                    </group>
+                    <group string="Theo dõi">
+                        <group>
+                            <field name="nhanhvn_shop_id" readonly="1" string="Shop ID"/>
+                            <field name="nhanhvn_original_order_id" readonly="1" string="Original Order"/>
+                        </group>
+                        <group>
+                            <field name="nhanhvn_return_from_id" readonly="1" string="Return Form"/>
+                            <field name="nhanhvn_id_return" widget="url" readonly="1" string="Return Order"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='state_ids']/tree" position="inside">
+                <field name="nhanhvn_order_status" readonly="1"/>
+            </xpath>
+            <field name="pic_tracking_url" position="after">
+                <field name="nhanhvn_info_url" widget="url" readonly="1" nolabel="1" colspan="4"
+                       invisible="nhanhvn_info_url == False"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

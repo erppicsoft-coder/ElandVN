@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================================================
+         SEARCH VIEW - Thanh toán
+         ======================================================================== -->
+    <record id="search_pic_ecommerce_payment" model="ir.ui.view">
+        <field name="name">search.pic.ecommerce.payment</field>
+        <field name="model">pic.ecommerce.payment</field>
+        <field name="arch" type="xml">
+            <search string="Thanh toán TMĐT">
+                <field name="name" string="Giao dịch" filter_domain="[
+                    '|', '|', '|', ('name', 'ilike', self), ('origin', 'ilike', self), ('order_sn', 'ilike', self), ('refund_sn', 'ilike', self)]"/>
+                <field name="user_id"/>
+                <separator/>
+                <field name="order_sn"/>
+                <field name="refund_sn"/>
+                <field name="buyer_name"/>
+                <separator/>
+                <field name="amount"/>
+                <field name="current_balance"/>
+                <separator/>
+                <field name="status"/>
+                <field name="state"/>
+
+                <separator/>
+                <filter string="Tiền vào" name="filter_inboundinbound" domain="[('payment_type', '=', 'inbound')]"/>
+                <filter string="Tiền ra" name="filter_outbound" domain="[('payment_type', '=', 'outbound')]"/>
+                <separator/>
+                <filter name="filter_date" date="date" default_period="this_month"/>
+                <separator/>
+
+                <filter string="Hôm nay" name="today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Hôm qua" name="yesterday"
+                        domain="[('date', '=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+                <filter string="Tuần này" name="this_week"
+                        domain="[('date', '&gt;', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Tuần trước" name="last_week"
+                        domain="[('date', '&gt;', (context_today() - relativedelta(weeks=2)).strftime('%Y-%m-%d')),
+                                 ('date', '&lt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+
+                <filter string="Dự thảo" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Kiểm tra" name="filter_confirm"
+                        domain="[('state', '=', 'confirm')]"/>
+                <filter string="Hoàn thành" name="filter_done"
+                        domain="[('state', '=', 'done')]"/>
+
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Người phụ trách" name="groupby_user_id"
+                            context="{'group_by':'user_id'}"/>
+                    <filter string="Ngày thanh toán" name="groupby_date"
+                            context="{'group_by':'date'}"/>
+                    <separator/>
+                    <filter string="Sàn TMĐT" name="groupby_config_id"
+                            context="{'group_by':'config_id'}"/>
+                    <filter string="Loại thanh toán" name="groupby_payment_type"
+                            context="{'group_by':'payment_type'}"/>
+                    <filter string="Loại giao dịch" name="groupby_transaction_type"
+                            context="{'group_by':'transaction_type'}"/>
+                    <separator/>
+                    <filter string="Trạng thái" name="groupby_state"
+                            context="{'group_by':'state'}"/>
+                    <filter string="Trạng thái thanh toán" name="groupby_status"
+                            context="{'group_by':'status'}"/>
+
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         TREE VIEW - Thanh toán
+         ======================================================================== -->
+    <record id="tree_pic_ecommerce_payment" model="ir.ui.view">
+        <field name="name">tree.pic.ecommerce.payment</field>
+        <field name="model">pic.ecommerce.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Thanh toán TMĐT" sample="1" create="0" edit="0" delete="1"
+                  decoration-success="payment_type == 'inbound'"
+                  decoration-warning="payment_type == 'outbound'" decoration-info="not payment_type">
+                <field name="name"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="hide"/>
+                <field name="create_time"/>
+                <field name="config_id" optional="show"/>
+                <field name="buyer_name" optional="hide"/>
+                <field name="revenue_amount" widget="monetary" sum="Tổng"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="transaction_fee" widget="monetary" sum="Tổng" optional="hide"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="shipping_fee" widget="monetary" sum="Tổng" optional="hide"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="fee_amount" widget="monetary" sum="Tổng"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="payment_type" widget="badge" optional="hide"
+                       decoration-success="payment_type == 'inbound'"
+                       decoration-warning="payment_type == 'outbound'" decoration-info="not payment_type"/>
+                <field name="transaction_type" optional="show"/>
+                <field name="amount" widget="monetary" sum="Tổng"
+                       decoration-info="1" decoration-bf="1"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="current_balance" widget="monetary" sum="Tổng" optional="hide"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="status" optional="hide"/>
+                <field name="session_id" optional="hide"/>
+                <field name="order_sn"/>
+                <field name="refund_sn" optional="hide"/>
+                <field name="warning" optional="hide"/>
+                <field name="description" optional="show"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'confirm'"
+                       decoration-muted="state == 'cancel'"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         PIVOT VIEW - Thanh toán
+         ======================================================================== -->
+    <record id="pivot_pic_ecommerce_payment" model="ir.ui.view">
+        <field name="name">pivot.pic.ecommerce.payment</field>
+        <field name="model">pic.ecommerce.payment</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích Thanh toán" sample="1">
+                <field name="config_id" type="row"/>
+                <field name="create_time" interval="month" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="current_balance" type="measure"/>
+                <field name="transaction_fee" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         GRAPH VIEW - Thanh toán
+         ======================================================================== -->
+    <record id="graph_pic_ecommerce_payment" model="ir.ui.view">
+        <field name="name">graph.pic.ecommerce.payment</field>
+        <field name="model">pic.ecommerce.payment</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ Thanh toán" sample="1" type="bar">
+                <field name="create_time" interval="day"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         FORM VIEW - Thanh toán
+         ======================================================================== -->
+    <record id="form_pic_ecommerce_payment" model="ir.ui.view">
+        <field name="name">form.pic.ecommerce.payment</field>
+        <field name="model">pic.ecommerce.payment</field>
+        <field name="arch" type="xml">
+            <form string="Thanh toán TMĐT" create="0" edit="0" delete="1">
+                <header>
+                    <button name="action_view_ecommerce_order" string="Xem đơn hàng" type="object"
+                            class="oe_highlight"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="oe_inline" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main info -->
+                    <group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user" readonly="1"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="config_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="session_id" invisible="not session_id"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="payment_type" widget="radio" options="{'horizontal': True}" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="create_time" readonly="1"/>
+                            <field name="order_sn" invisible="not order_sn" readonly="1"/>
+                            <field name="refund_sn" invisible="not refund_sn" readonly="1"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Thông tin đơn hàng">
+                        <group>
+                            <field name="ecommerce_id" invisible="ecommerce_id == False" readonly="1"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="buyer_name" readonly="1"/>
+                            <field name="transaction_type" readonly="1" invisible="not fee_type"/>
+                            <field name="fee_type" readonly="1" invisible="not fee_type"/>
+                            <field name="reason" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="revenue_amount" widget="monetary" readonly="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="transaction_fee" widget="monetary" readonly="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="shipping_fee" widget="monetary" readonly="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="fee_amount" widget="monetary" readonly="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount" widget="monetary" readonly="1"
+                                   decoration-info="1" decoration-bf="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="current_balance" widget="monetary" readonly="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                    </group>
+
+                    <group string="Mô tả" invisible="not description" colspan="2">
+                        <field name="description" nolabel="1" readonly="1" colspan="2"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Cảnh báo" name="warning" invisible="warning == False or warning == ''">
+                            <group string="Cảnh báo" colspan="2">
+                                <field name="warning" readonly="1" force_save="1" nolabel="1" class="text-danger"
+                                       colspan="2"/>
+                            </group>
+                        </page>
+                        <page string="API" name="api">
+                            <group string="Dữ liệu phản hồi" colspan="2">
+                                <field name="response_data" nolabel="1" colspan="2" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         ACTIONS
+         ======================================================================== -->
+    <record id="action_pic_ecommerce_payment" model="ir.actions.act_window">
+        <field name="name">Thanh toán</field>
+        <field name="res_model">pic.ecommerce.payment</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_payment"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có dữ liệu thanh toán
+            </p>
+            <p>
+                Dữ liệu thanh toán sẽ được đồng bộ tự động từ các sàn TMĐT.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu item -->
+    <menuitem id="pic_ecommerce_payment_menu"
+              parent="pic_ecommerce_base.menu_pic_ecommere_mgmt"
+              name="Thanh toán"
+              action="action_pic_ecommerce_payment"
+              sequence="70"
+              groups="base.group_user"/>
+</odoo>

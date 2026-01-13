@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model='ir.ui.view' id='form_pic_ecommerce_config_pic_ecommerce_nhanhvn'>
+        <field name="name">form_pic_ecommerce_config_pic_ecommerce_nhanhvn</field>
+        <field name="model">pic.ecommerce.config</field>
+        <field name="inherit_id" ref="pic_ecommerce_base.form_pic_ecommerce_config"/>
+        <field name="arch" type="xml">
+            <button name="action_get_auth_url" position="after">
+                <button name="nhanhvn_get_channel_data_v2" invisible="type != 'nhanhvn' or channel_data != False" type="object" string="Lấy thông tin Sàn"/>
+                <button name="nhanhvn_create_ecommerce_shop" invisible="type != 'nhanhvn' or channel_data == False or count_ecommerce_shop != 0" type="object" string="Tạo DS Shop"/>
+                <button name="nhanhvn_get_product_data" invisible="type != 'nhanhvn' or product_data != False" type="object" string="Lấy thông tin SP"/>
+                <button name="nhanhvn_create_product_template" invisible="type != 'nhanhvn' or product_data == False" type="object" string="Tạo SP"/>
+                <button name="nhanhvn_get_product_category_data" invisible="type != 'nhanhvn' or product_category_data != False or count_product_template != 0" type="object" string="Lấy Danh mục SP"/>
+                <button name="nhanhvn_create_product_category" invisible="type != 'nhanhvn' or product_category_data == False or count_product_category != 0" type="object" string="Tạo Danh mục SP"/>
+            </button>
+
+            <xpath expr="//form/sheet/div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_product_template" type="object"
+                    invisible="count_product_template == 0"
+                    icon="fa-product-hunt">
+                    <field name="count_product_template" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" name="action_view_product_category" type="object"
+                    invisible="count_product_category == 0"
+                    icon="fa-list">
+                    <field name="count_product_category" widget="statinfo"/>
+                </button>
+                <button class="oe_stat_button" name="action_view_ecommerce_shop" type="object"
+                    invisible="count_ecommerce_shop == 0"
+                    icon="fa-shopping-cart">
+                    <field name="count_ecommerce_shop" widget="statinfo"/>
+                </button>
+            </xpath>
+
+            <field name="ship_cost_product_id" position="after">
+                <field name="default_tax_id"/>
+            </field>
+
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Thông tin sản phẩm" invisible="type != 'nhanhvn'">
+                    <field name="product_data"/>
+                </page>
+                <page string="Thông tin sàn" invisible="type != 'nhanhvn'">
+                    <field name="channel_data"/>
+                </page>
+                <page string="Thông tin danh mục sản phẩm" invisible="type != 'nhanhvn'">
+                    <field name="product_category_data"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================================================
+         SEARCH VIEW - Trả hàng/Hoàn tiền
+         ======================================================================== -->
+    <record id="search_pic_ecommerce_return" model="ir.ui.view">
+        <field name="name">search.pic.ecommerce.return</field>
+        <field name="model">pic.ecommerce.return</field>
+        <field name="arch" type="xml">
+            <search string="Trả hàng/Hoàn tiền">
+                <field name="name"/>
+                <field name="config_id"/>
+                <field name="session_id"/>
+                <field name="user_id"/>
+                <field name="tracking_number"/>
+                <field name="ordersn"/>
+                <field name="user_name"/>
+                <field name="email"/>
+                <field name="status"/>
+                <field name="state"/>
+
+                <filter string="Dự thảo" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="Xác nhận" name="filter_confirm"
+                        domain="[('state', '=', 'confirm')]"/>
+                <filter string="Hoàn thành" name="filter_done"
+                        domain="[('state', '=', 'done')]"/>
+
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Người chịu trách nhiệm" name="groupby_user_id"
+                            context="{'group_by':'user_id'}"/>
+                    <filter string="Nguồn ecommerce" name="groupby_config_id"
+                            context="{'group_by':'config_id'}"/>
+                    <filter string="Phiên đồng bộ" name="groupby_session_id"
+                            context="{'group_by':'session_id'}"/>
+                    <filter string="Trạng thái" name="groupby_state"
+                            context="{'group_by':'state'}"/>
+                    <filter string="Trạng thái trả hàng" name="groupby_status"
+                            context="{'group_by':'status'}"/>
+                    <filter string="Ngày tạo trả hàng" name="groupby_create_time"
+                            context="{'group_by':'create_time'}"/>
+                    <filter string="Người mua" name="groupby_user_name"
+                            context="{'group_by':'user_name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         TREE VIEW - Trả hàng/Hoàn tiền
+         ======================================================================== -->
+    <record id="tree_pic_ecommerce_return" model="ir.ui.view">
+        <field name="name">tree.pic.ecommerce.return</field>
+        <field name="model">pic.ecommerce.return</field>
+        <field name="arch" type="xml">
+            <tree string="Trả hàng/Hoàn tiền"
+                  sample="1"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'confirm'"
+                  decoration-success="state == 'done'"
+                  decoration-muted="state == 'cancel'">
+
+                <field name="session_id"/>
+                <field name="config_id"/>
+                <field name="name"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="tracking_number"/>
+                <field name="create_time"/>
+                <field name="user_name" optional="show"/>
+                <field name="email" optional="hide"/>
+                <field name="amount_before_discount"
+                       sum="Tổng"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="refund_amount"
+                       sum="Tổng"
+                       widget="monetary"
+                       options="{'currency_field': 'currency_id'}"/>
+                <field name="status"/>
+                <field name="last_sale_id"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirm'"
+                       decoration-success="state == 'done'"
+                       decoration-muted="state == 'cancel'"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         PIVOT VIEW - Trả hàng/Hoàn tiền
+         ======================================================================== -->
+    <record id="pivot_pic_ecommerce_return" model="ir.ui.view">
+        <field name="name">pivot.pic.ecommerce.return</field>
+        <field name="model">pic.ecommerce.return</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích Trả hàng" sample="1">
+                <field name="config_id" type="row"/>
+                <field name="status" type="row"/>
+                <field name="create_time" interval="month" type="col"/>
+                <field name="amount_before_discount" type="measure"/>
+                <field name="refund_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         GRAPH VIEW - Trả hàng/Hoàn tiền
+         ======================================================================== -->
+    <record id="graph_pic_ecommerce_return" model="ir.ui.view">
+        <field name="name">graph.pic.ecommerce.return</field>
+        <field name="model">pic.ecommerce.return</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ Trả hàng" sample="1" type="bar">
+                <field name="create_time" interval="month"/>
+                <field name="amount_before_discount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         FORM VIEW - Trả hàng/Hoàn tiền
+         ======================================================================== -->
+    <record id="form_pic_ecommerce_return" model="ir.ui.view">
+        <field name="name">form.pic.ecommerce.return</field>
+        <field name="model">pic.ecommerce.return</field>
+        <field name="arch" type="xml">
+            <form string="Trả hàng/Hoàn tiền">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="oe_inline"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main info -->
+                    <group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="config_id"/>
+                            <field name="user_name"/>
+                            <field name="email" widget="email"/>
+                            <field name="reason"/>
+                            <field name="text_reason"/>
+                            <field name="return_seller_due_date"/>
+                            <field name="return_ship_due_date"/>
+                        </group>
+                        <group>
+                            <field name="create_time"/>
+                            <field name="update_time"/>
+                            <field name="due_date"/>
+                            <field name="ecommerce_id"/>
+                            <field name="session_id"/>
+                            <field name="needs_logistics" widget="boolean_toggle"/>
+                            <field name="tracking_number"/>
+                            <field name="status"/>
+                        </group>
+                    </group>
+
+                    <!-- Items -->
+                    <notebook>
+                        <page string="Chi tiết sản phẩm">
+                            <field name="line_ids" nolabel="1">
+                                <tree editable="bottom" create="0" delete="0">
+                                    <field name="item_sku"/>
+                                    <field name="item_name"/>
+                                    <field name="code_product"/>
+                                    <field name="product_tmpl_id"/>
+                                    <field name="variation_quantity_purchased"
+                                           string="Số lượng"
+                                           sum="Total"/>
+                                    <field name="variation_discounted_price"
+                                           string="Đơn giá"/>
+                                    <field name="subtotal"
+                                           string="Thành tiền"
+                                           sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+
+                    <!-- Amounts -->
+                    <group>
+                        <group>
+                            <field name="amount_before_discount"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="refund_amount"
+                                   invisible="1"
+                                   widget="monetary"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         ACTIONS
+         ======================================================================== -->
+    <record id="action_pic_ecommerce_return" model="ir.actions.act_window">
+        <field name="name">Trả hàng/hoàn tiền</field>
+        <field name="res_model">pic.ecommerce.return</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_return"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có dữ liệu trả hàng
+            </p>
+            <p>
+                Dữ liệu trả hàng/hoàn tiền sẽ được đồng bộ tự động từ các sàn TMĐT.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu item -->
+    <menuitem id="pic_ecommerce_return_menu"
+              parent="pic_ecommerce_base.menu_pic_ecommere_mgmt"
+              name="Trả hàng/hoàn tiền"
+              action="action_pic_ecommerce_return"
+              sequence="50"
+              groups="base.group_user"/>
+</odoo>

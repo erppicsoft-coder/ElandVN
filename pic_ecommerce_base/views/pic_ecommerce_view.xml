@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<odoo>
+    <menuitem id="menu_pic_ecommerce_root" name="eCommerce"
+              web_icon="pic_ecommerce_base,static/description/icon.png"
+              sequence="24" groups="sales_team.group_sale_salesman"/>
+
+    <menuitem id="pic_ecommerce_order_menu" parent="menu_pic_ecommerce_root" name="Đơn hàng"
+              action="action_pic_ecommerce_order"
+              sequence="10" groups="base.group_user"/>
+
+    <menuitem id="menu_pic_ecommere_mgmt" parent="menu_pic_ecommerce_root" name="Hoạt động"
+              sequence="20" groups="sales_team.group_sale_salesman"/>
+
+    <menuitem id="menu_pic_ecommere_session" parent="menu_pic_ecommerce_root" name="Phiên đồng bộ"
+               action="action_pic_ecommerce_session"
+              sequence="40" groups="sales_team.group_sale_salesman"/>
+
+    <menuitem id="menu_pic_ecommere_configuration" parent="menu_pic_ecommerce_root" name="Cấu hình"
+              sequence="80" groups="sales_team.group_sale_manager">
+    </menuitem>
+
+    <record model="ir.actions.act_window" id="action_pic_ecommerce_order_company">
+        <field name="name">Đơn hàng TMĐT</field>
+        <field name="res_model">pic.ecommerce.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('config_type', '=', 'company')]</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_order"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'search_default_draft_result':
+            True}
+        </field>
+    </record>
+
+    <record id="action_product_template_pic_ecommerce" model="ir.actions.act_window">
+        <field name="name">Sản phẩm</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product.product_template_tree_view"/>
+        <field name="search_view_id" ref="product.product_template_search_view"/>
+        <field name="context">{"sale_multi_pricelist_product_template": 1}
+        </field>
+    </record>
+
+    <menuitem id="menu_pic_ecommere_masterdata" parent="menu_pic_ecommerce_root" name="Dữ liệu gốc"
+              sequence="60" groups="base.group_user">
+        <menuitem id="menu_product_template_pic_ecommerce" name="Sản phẩm"
+                  action="action_product_template_pic_ecommerce"
+                  sequence="5" groups="base.group_user"/>
+    </menuitem>
+
+</odoo>

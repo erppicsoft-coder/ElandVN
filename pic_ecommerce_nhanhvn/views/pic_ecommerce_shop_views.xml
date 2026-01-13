@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+
+		<record model="ir.ui.view" id="tree_pic_ecommerce_shop">
+			<field name="name">tree_pic_ecommerce_shop</field>
+			<field name="model">pic.ecommerce.shop</field>
+			<field name="arch" type="xml">
+				<tree sample="1" string="Shop TMĐT">
+					<field name="type"/>
+					<field name="shop_id"/>
+					<field name="app_id" optional="hide"/>
+					<field name="name"/>
+					<field name="partner_id"/>
+					<field name="partner_shipping_id" optional="show"/>
+					<field name="partner_invoice_id" optional="show"/>
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="form_pic_ecommerce_shop">
+			<field name="name">form_pic_ecommerce_shop</field>
+			<field name="model">pic.ecommerce.shop</field>
+			<field name="arch" type="xml">
+				<form string="Shop TMĐT">
+					<sheet>
+						<h1>
+							<field name="name" readonly="1" class="oe_inline"/>
+						</h1>
+						<group string="Thông tin chung">
+							<group>
+								<field name="partner_id"/>
+								<field name="type" readonly="1"/>
+								<field name="shop_id" readonly="1"/>
+							</group>
+							<group>
+								<field name="expired_at" readonly="1" invisible="expired_at == False"/>
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_pic_ecommerce_shop">
+			<field name="name">Shop TMĐT</field>
+			<field name="res_model">pic.ecommerce.shop</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+	</data>
+</odoo>

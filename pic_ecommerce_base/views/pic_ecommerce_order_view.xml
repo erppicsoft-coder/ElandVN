@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================================================
+         SEARCH VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="search_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">search.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <search string="Đơn hàng TMĐT">
+                <!-- Search fields -->
+                <field name="name" string="Đơn hàng số" filter_domain="[
+                    '|', '|', '|', '|', ('name', 'ilike', self), ('origin', 'ilike', self), ('origin', 'ilike', self), ('recipient_phone', 'ilike', self), ('recipient_name', 'ilike', self)]"/>
+                <field name="config_id"/>
+                <field name="user_id"/>
+                <field name="order_status"/>
+                <field name="state"/>
+                <separator/>
+                <field name="shipping_carrier"/>
+                <field name="tracking_no"/>
+                <field name="recipient_name"/>
+                <field name="recipient_phone"/>
+                <field name="recipient_full_address"/>
+                <separator/>
+                <field name="state_id"/>
+                <field name="district_id"/>
+                <field name="ward_id"/>
+
+                <!-- Status filters -->
+                <filter name="filter_date_order" date="date_order" default_period="this_month"/>
+                <filter name="filter_date_delivered" date="date_delivered" default_period="this_month"/>
+                <separator/>
+                <filter name="filter_order_status_revenue" string="Doanh thu (bán - hủy)"
+                        domain="[('order_status', 'not in', ['IN_CANCEL', 'CANCELLED', 'TO_RETURN', 'RETURNED'])]"/>
+                <!--                <separator/>-->
+                <!--                <filter string="Đơn Sự cố" name="filter_incident"-->
+                <!--                        domain="[('is_incident', '=', True)]"/>-->
+                <!--                <filter string="Đơn cần xử lý" name="draft_result"-->
+                <!--                        domain="[('state', '!=', 'cancel'), '|', '|',('last_sale_id', '=', False), ('last_sale_id.state', '=', 'draft'), ('order_status', 'ilike', 'cancel')]"/>-->
+                <!--                <filter string="Đơn hoàn thành" name="done_result"-->
+                <!--                        domain="[('state', '=', 'done')]"/>-->
+                <!--                <filter string="Đơn hủy" name="cancel_result"-->
+                <!--                        domain="[('state', '=', 'cancel')]"/>-->
+
+                <separator/>
+                <filter name="filter_date_delivered_ok" string="Đơn giao thành công"
+                        domain="[('date_delivered', '!=', False)]"/>
+                <separator/>
+
+                <filter string="Đơn hôm nay" name="today"
+                        domain="[('date_order', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Đơn hôm qua" name="yesterday"
+                        domain="[('date_order', '=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+                <filter string="Đơn tuần này" name="this_week"
+                        domain="[('date_order', '&gt;', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Đơn tuần trước" name="last_week"
+                        domain="[('date_order', '&gt;', (context_today() - relativedelta(weeks=2)).strftime('%Y-%m-%d')),
+                                 ('date_order', '&lt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+
+                <separator/>
+                <filter string="Đã giao hôm nay" name="delivered_today"
+                        domain="[('date_delivered', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Đã giao hôm qua" name="delivered_yesterday"
+                        domain="[('date_delivered', '=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+                <filter string="Đã giao tuần này" name="delivered_this_week"
+                        domain="[('date_delivered', '&gt;', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Đã giao tuần trước" name="delivered_last_week"
+                        domain="[('date_delivered', '&gt;', (context_today() - relativedelta(weeks=2)).strftime('%Y-%m-%d')),
+                                 ('date_delivered', '&lt;=', (context_today() - relativedelta(weeks=1)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+                <!--                <filter name="filter_order_status_new" string="Trạng thái Mới"-->
+                <!--                        domain="[('order_status', 'in', ['UNPAID', 'TO_PACK'])]"/>-->
+                <!--                <filter name="filter_order_status_processing" string="Trạng thái Đang thực hiện"-->
+                <!--                        domain="[('order_status', 'not in', ['UNPAID', 'TO_PACK', 'COMPLETED', 'IN_CANCEL', 'CANCELLED', 'TO_RETURN', 'RETURNED'])]"/>-->
+                <!--                <filter name="filter_order_status_done" string="Trạng thái Hoàn thành"-->
+                <!--                        domain="[('order_status', '=', 'COMPLETED')]"/>-->
+                <!--                <filter name="filter_order_status_cancel" string="Trạng thái Hủy"-->
+                <!--                        domain="[('order_status', 'in', ['IN_CANCEL', 'CANCELLED', 'TO_RETURN', 'RETURNED'])]"/>-->
+                <!--                <separator/>-->
+                <!--                &lt;!&ndash; Missing address filters &ndash;&gt;-->
+                <!--                <separator/>-->
+                <!--                <filter string="Thiếu Tỉnh/TP" name="miss_state_id"-->
+                <!--                        domain="[('state_name', 'not in', (False, '')), ('state_id', '=', False)]"/>-->
+                <!--                <filter string="Thiếu Quận/Huyện" name="miss_district_id"-->
+                <!--                        domain="[('district_name', 'not in', (False, '')), ('district_id', '=', False)]"/>-->
+                <!--                <filter string="Thiếu Phường/Xã" name="miss_ward_id"-->
+                <!--                        domain="[('ward_name', 'not in', (False, '')), ('ward_id', '=', False)]"/>-->
+
+                <!-- Voucher filters -->
+                <!--                <separator/>-->
+                <!--                <filter string="Có trợ giá" name="has_platform_voucher"-->
+                <!--                        domain="[('platform_voucher_amount', '>', 0)]"/>-->
+                <!--                <filter string="Có voucher" name="has_voucher"-->
+                <!--                        domain="[('voucher_amount', '>', 0)]"/>-->
+
+                <!-- Group by -->
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Người phụ trách" name="groupby_user_id"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter string="Ngày đặt hàng" name="groupby_create_time"
+                            context="{'group_by': 'date_order'}"/>
+                    <separator/>
+                    <filter string="Sàn TMĐT" name="groupby_config_id"
+                            context="{'group_by': 'config_id'}"/>
+                    <filter string="Nguồn" name="groupby_source_id"
+                            context="{'group_by': 'source_id'}"/>
+                    <separator/>
+                    <filter string="Khách hàng" name="groupby_partner_id"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter string="Phương thức vận tải" name="groupby_shipping_carrier"
+                            context="{'group_by': 'shipping_carrier'}"/>
+
+                    <separator/>
+                    <filter string="Trạng thái" name="groupby_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Trạng thái tại Sàn" name="groupby_order_status"
+                            context="{'group_by': 'order_status'}"/>
+                    <filter string="Trạng thái đơn hàng" name="groupby_sale_status"
+                            context="{'group_by': 'sale_status'}"/>
+                    <filter string="Trạng thái giao hàng" name="groupby_delivery_status"
+                            context="{'group_by': 'delivery_status'}"/>
+                    <filter string="Trạng thái hóa đơn" name="groupby_invoice_status"
+                            context="{'group_by': 'invoice_status'}"/>
+                    <separator/>
+                    <filter string="Tỉnh/TP" name="groupby_state_id"
+                            context="{'group_by': 'state_id'}"/>
+                    <filter string="Quận/Huyện" name="groupby_district_id"
+                            context="{'group_by': 'district_id'}"/>
+                    <filter string="Phường/Xã" name="groupby_ward_id"
+                            context="{'group_by': 'ward_id'}"/>
+
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         TREE VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="tree_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">tree.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <tree string="Đơn hàng TMĐT" create="0" delete="1" sample="1"
+                  decoration-danger="is_incident == True"
+                  decoration-muted="state == 'cancel'"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state == 'validate'"
+                  decoration-primary="state == 'confirm'"
+                  decoration-success="state == 'done'">
+
+                <field name="config_id" optional="hide"/>
+                <field name="business_model" string="Mô hình" widget="badge" optional="hide"/>
+                <field name="name"/>
+                <field name="create_time"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="partner_id" optional="show"/>
+
+                <field name="origin" optional="show"/>
+                <field name="last_sale_id" optional="hide"/>
+                <button name="action_view_sale_order" type="object" icon="fa-shopping-cart"
+                        string="" invisible="not last_sale_id"
+                        class="btn-info btn-sm"/>
+
+                <field name="tracking_no" optional="show"/>
+                <field name="ship_by_date" optional="show"/>
+
+                <!-- Recipient info -->
+                <field name="recipient_name" optional="hide"/>
+                <field name="recipient_phone" widget="phone" optional="hide"/>
+                <field name="recipient_full_address" optional="hide"/>
+
+                <!-- Address -->
+                <field name="state_id" optional="hide"/>
+                <field name="district_id" optional="hide"/>
+                <field name="ward_id" optional="hide"/>
+
+                <!-- Amounts -->
+                <field name="voucher_code" optional="hide"/>
+                <field name="voucher_amount" sum="Tổng" optional="hide"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="platform_voucher_amount" sum="Tổng" optional="hide"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="ecommerce_amount" sum="Tổng tiền"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"/>
+
+                <!-- Status & SO -->
+                <field name="warning" optional="hide"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state in ('confirm', 'validate')"
+                       decoration-muted="state == 'cancel'"/>
+                <field name="order_status" widget="badge"
+                       decoration-info="order_status in ('UNPAID', 'TO_CONFIRM_RECEIVE', 'INVOICE_PENDING')"
+                       decoration-warning="order_status in ('TO_PACK', 'TO_SHIP', 'RETRY_SHIP', 'TO_RETURN')"
+                       decoration-primary="order_status in ('READY_TO_SHIP', 'PROCESSED')"
+                       decoration-success="order_status in ('SHIPPED', 'COMPLETED')"
+                       decoration-danger="order_status == 'INCIDENT'"
+                       decoration-muted="order_status in ('IN_CANCEL', 'CANCELLED', 'RETURNED')"/>
+
+                <field name="sale_status" optional="show" widget="badge"
+                       decoration-info="sale_status == 'to_sale'"
+                       decoration-success="sale_status == 'sold'"
+                       decoration-muted="sale_status == 'no'"/>
+                <field name="delivery_status" optional="hide" widget="badge"
+                       decoration-info="delivery_status == 'partial'"
+                       decoration-success="delivery_status == 'full'"
+                       decoration-muted="delivery_status == 'pending'"/>
+                <field name="invoice_status" optional="hide" widget="badge"
+                       decoration-info="invoice_status == 'to invoice'"
+                       decoration-success="invoice_status == 'invoiced'"
+                       decoration-muted="invoice_status == 'no'"/>
+
+                <field name="last_sale_amount" sum="Tổng tiền" optional="hide" column_invisible="1"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"/>
+
+                <!-- Hidden fields for computations -->
+                <field name="is_incident" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         KANBAN VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="kanban_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">kanban.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile"
+                    sample="1"
+                    group_create="false"
+                    quick_create="false">
+                <field name="name"/>
+                <field name="ordersn"/>
+                <field name="config_id"/>
+                <field name="state"/>
+                <field name="order_status"/>
+                <field name="ecommerce_amount"/>
+                <field name="recipient_name"/>
+                <field name="recipient_phone"/>
+                <field name="create_time"/>
+                <field name="is_incident"/>
+                <field name="currency_id"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click
+                                          #{record.is_incident.raw_value ? 'border-danger' : ''}
+                                          #{record.state.raw_value == 'cancel' ? 'text-muted' : ''}">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle">
+                                            <field name="config_id"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="state" widget="badge"
+                                               decoration-info="state == 'draft'"
+                                               decoration-success="state == 'done'"
+                                               decoration-warning="state in ('confirm', 'validate')"
+                                               decoration-muted="state == 'cancel'"/>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <i class="fa fa-user"/>
+                                            <field name="recipient_name"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <i class="fa fa-phone"/>
+                                            <field name="recipient_phone" widget="phone"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <field name="order_status" widget="badge"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge badge-pill">
+                                            <i class="fa fa-clock-o"/>
+                                            <field name="create_time" widget="date"/>
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <strong>
+                                            <field name="ecommerce_amount"
+                                                   widget="monetary"
+                                                   options="{'currency_field': 'currency_id'}"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         PIVOT VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="pivot_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">pivot.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích Đơn hàng TMĐT" display_quantity="1" sample="1">
+                <field name="source_id" type="row"/>
+                <field name="date_order" interval="month" type="col"/>
+                <field name="ecommerce_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         GRAPH VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="graph_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">graph.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ Đơn hàng TMĐT" sample="1" type="line">
+                <field name="date_order" interval="day"/>
+                <field name="ecommerce_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         FORM VIEW - Đơn hàng TMĐT
+         ======================================================================== -->
+    <record id="form_pic_ecommerce_order" model="ir.ui.view">
+        <field name="name">form.pic.ecommerce.order</field>
+        <field name="model">pic.ecommerce.order</field>
+        <field name="arch" type="xml">
+            <form string="Đơn hàng TMĐT">
+                <header>
+                    <button name="action_confirm" string="Tiếp nhận đơn" type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_validate" string="Kiểm tra" type="object" class="oe_highlight"
+                            invisible="state != 'validate'"/>
+
+                    <button name="action_create_sale_order" string="Tạo đơn hàng" type="object" class="oe_highlight"
+                            invisible="state != 'confirm' or last_sale_id"/>
+
+                    <button name="action_view_last_sale_id" string="Xem đơn hàng" type="object" class="oe_highlight"
+                            invisible="state != 'done' or not last_sale_id"/>
+
+                    <button name="action_update_order_info" string="Cập nhật thông tin" type="object"
+                            invisible="state in ('done', 'cancel') or last_sale_id"/>
+
+                    <!-- Admin only -->
+                    <button name="action_cancel" string="Hủy" type="object" invisible="state in ('done', 'cancel')"
+                            groups="base.group_no_one"/>
+                    <button name="action_force_confirm" string="Bỏ qua cảnh báo" type="object"
+                            invisible="state != 'validate'" groups="base.group_no_one"/>
+                    <button name="action_draft" string="Về dự thảo" type="object" invisible="state == 'draft'"
+                            groups="base.group_no_one"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,validate,confirm,done"/>
+                </header>
+
+                <sheet>
+                    <!-- Button box -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_view_sale_order" type="object"
+                                icon="fa-shopping-cart" invisible="sale_count == 0">
+                            <field name="sale_count" widget="statinfo" string="Đơn bán"/>
+                            <field name="sale_ids" invisible="1"/>
+                        </button>
+                        <button name="action_view_delivery" type="object" class="oe_stat_button"
+                                icon="fa-truck" invisible="picking_count == 0">
+                            <field name="picking_count" widget="statinfo" string="Giao hàng"/>
+                            <field name="picking_ids" invisible="1"/>
+                        </button>
+                        <button name="action_view_invoice" type="object" class="oe_stat_button"
+                                icon="fa-pencil-square-o" invisible="invoice_count == 0">
+                            <field name="invoice_count" widget="statinfo" string="Hóa đơn"/>
+                            <field name="invoice_ids" invisible="1"/>
+                        </button>
+                        <button name="action_view_ecommerce_payment" type="object" class="oe_stat_button"
+                                icon="fa-money" invisible="ecommerce_payment_count == 0">
+                            <field name="ecommerce_payment_count" widget="statinfo" string="Sao kê"/>
+                            <field name="ecommerce_payment_ids" invisible="1"/>
+                        </button>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                            <field name="business_model" widget="badge" invisible="0"/>
+                            <field name="order_status" widget="badge"
+                                   decoration-info="order_status in ('UNPAID', 'TO_CONFIRM_RECEIVE', 'INVOICE_PENDING')"
+                                   decoration-warning="order_status in ('TO_PACK', 'TO_SHIP', 'RETRY_SHIP', 'TO_RETURN')"
+                                   decoration-primary="order_status in ('READY_TO_SHIP', 'PROCESSED')"
+                                   decoration-success="order_status in ('SHIPPED', 'COMPLETED')"
+                                   decoration-danger="order_status == 'INCIDENT'"
+                                   decoration-muted="order_status in ('IN_CANCEL', 'CANCELLED', 'RETURNED')"
+                                   invisible="0"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main info -->
+                    <group string="Thông tin chung">
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user" readonly="sale_ids"/>
+                            <field name="config_id" options="{'no_create': True, 'no_open': True}"
+                                   readonly="1" groups="base.group_system"/>
+                            <field name="config_type" invisible="1"/>
+                            <field name="source_id" options="{'no_create': True, 'no_open': True}" readonly="sale_ids"/>
+                            <field name="warehouse_id" options="{'no_create': True, 'no_open': True}"
+                                   required="1" readonly="sale_ids"/>
+
+                        </group>
+                        <group>
+                            <field name="create_time" readonly="1"/>
+                            <field name="update_time" invisible="1"/>
+                            <field name="origin" readonly="1"/>
+                            <field name="last_sale_id" invisible="1"/>
+                            <field name="pricelist_id" options="{'no_create': True, 'no_open': True}"
+                                   required="1" readonly="sale_ids"/>
+                            <field name="payment_term_id" options="{'no_create': True, 'no_open': True}"
+                                   required="1" readonly="sale_ids"/>
+                        </group>
+                    </group>
+
+                    <group invisible="invoice_status not in (False, 'no')">
+                        <div class="alert alert-warning" role="alert" colspan="2">
+                            <i class="fa fa-exclamation-triangle"/>
+                            <strong>Lưu ý xuất hóa đơn:</strong>
+                            <ul>
+                                <li>Vui lòng kiểm tra kỹ mã số thuế và thông tin công ty
+                                </li>
+                                <li>Thời điểm xuất hóa đơn là thời điểm
+                                    <strong>Khách hàng đã nhận hàng</strong>
+                                </li>
+                            </ul>
+                        </div>
+                    </group>
+
+                    <group>
+                        <group string="Thông tin đơn hàng">
+                            <field name="partner_id" widget="res_partner_many2one"
+                                   readonly="sale_ids or business_model== 'b2b'"
+                                   required="business_model == 'b2b'"
+                                   invisible="business_model != 'b2b'"
+                                   options="{'no_create': True, 'no_open': True}"
+                                   placeholder="Nhập từ khóa để tìm khách hàng..."/>
+
+                            <field name="recipient_id" widget="res_partner_many2one" readonly="1" force_save="1"
+                                   invisible="business_model == 'b2b'"
+                                   options="{'no_create': True, 'no_open': True}"/>
+
+                            <field name="partner_shipping_id" widget="res_partner_many2one" required="1" invisible="1"
+                                   readonly="sale_ids" options="{'no_create': True, 'no_open': True}"
+                                   context="{'default_type':'delivery', 'show_address': False, 'show_vat': False}"/>
+
+                            <!--                            <button name="action_update_recipient_contact" string="Tạo/Cập nhật thông tin người mua"-->
+                            <!--                                    type="object" class="btn-link" icon="fa-refresh"-->
+                            <!--                                    invisible="business_model != 'b2c' or not recipient_id"/>-->
+                            <field name="recipient_name" string="Tên người mua" readonly="1"/>
+                            <label for="recipient_phone"/>
+                            <div class="o_row">
+                                <field name="recipient_phone" string="Điện thoại" widget="phone" readonly="1"/>
+                                <button name="action_create_recipient_contact" type="object"
+                                        class="btn fa fa-user"
+                                        aria-label="Tạo/Cập nhật thông tin người mua"
+                                        title="Tạo/Cập nhật thông tin người mua" role="img"
+                                        invisible="business_model != 'b2c'"/>
+                            </div>
+                            <field name="recipient_full_address" string="Địa chỉ" readonly="1"/>
+                        </group>
+
+                        <group string="Thông tin hóa đơn">
+                            <field name="take_einvoice" widget="boolean_toggle"
+                                   readonly="invoice_status not in (False, 'no')"/>
+                            <field name="partner_invoice_id" widget="res_partner_many2one" required="1" invisible="1"
+                                   readonly="sale_ids" options="{'no_create': True, 'no_open': True}"
+                                   context="{'default_type':'invoice', 'show_address': False, 'show_vat': False}"/>
+                            <label for="invoice_vat"/>
+                            <div class="o_row">
+                                <field name="invoice_vat" required="take_einvoice" readonly="not take_einvoice"
+                                       string="Mã số thuế" placeholder="Nhập mã số thuế 10 hoặc 13 số"/>
+                                <button name="action_create_invoice_partner" type="object"
+                                        class="btn fa fa-address-book"
+                                        aria-label="Tạo/Cập nhật thông tin công ty"
+                                        title="Tạo/Cập nhật thông tin công ty" role="img"
+                                        invisible="not take_einvoice"/>
+                            </div>
+
+                            <field name="invoice_partner_name" required="take_einvoice" readonly="not take_einvoice"
+                                   string="Tên công ty" placeholder="Tên công ty trên hóa đơn"/>
+                            <field name="invoice_address" required="take_einvoice" readonly="not take_einvoice"
+                                   string="Địa chỉ" placeholder="Địa chỉ công ty"/>
+                            <field name="invoice_status" invisible="not invoice_status" widget="badge"
+                                   decoration-info="invoice_status == 'to invoice'"
+                                   decoration-success="invoice_status == 'invoiced'"
+                                   decoration-muted="invoice_status == 'no'"/>
+                        </group>
+                    </group>
+
+                    <!-- Warning -->
+                    <group string="Cảnh báo" invisible="warning == False or warning == ''" colspan="4">
+                        <field name="warning" class="text-danger" nolabel="1" colspan="4"/>
+                    </group>
+
+                    <!-- Notebook -->
+                    <notebook>
+                        <page string="Chi tiết đơn hàng" name="order_lines">
+                            <field name="items" nolabel="1" readonly="1">
+                                <tree editable="bottom" create="0" delete="0">
+                                    <field name="item_sku" column_invisible="parent.state in ['confirm', 'done']"/>
+                                    <field name="item_name" column_invisible="parent.state in ['confirm', 'done']"/>
+                                    <field name="code_product"/>
+                                    <field name="product_tmpl_id" optional="hide" options="{'no_create': True}"/>
+                                    <field name="is_add_on_deal" optional="hide"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom"/>
+                                    <field name="original_price" optional="hide"/>
+                                    <field name="price"/>
+                                    <field name="discount"/>
+                                    <field name="subtotal" decoration-info="1"/>
+                                    <field name="platform_voucher_amount" string="Trợ giá" column_invisible="1"/>
+                                    <field name="combo_product_tmpl_id" column_invisible="1"/>
+                                    <field name="pricelist_id" column_invisible="1"/>
+                                    <field name="is_check_price" column_invisible="1"/>
+                                </tree>
+                            </field>
+                            <group col="6" class="mt-2 mt-md-0">
+                                <group colspan="4">
+                                    <field colspan="4" name="note" nolabel="1" placeholder="Ghi chú thêm..."/>
+                                    <field name="pic_tracking_url" widget="url" readonly="1" nolabel="1" colspan="4"
+                                           invisible="pic_tracking_url == False"/>
+                                </group>
+                                <group class="oe_subtotal_footer oe_right" colspan="2">
+                                    <field name="business_cod" widget="monetary" invisible="not business_cod"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                    <field name="ecommerce_amount"
+                                           widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    <field name="business_payment" widget="monetary" invisible="not business_payment"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                                <div class="clearfix"/>
+                            </group>
+                        </page>
+
+                        <page string="Thông tin khác" name="other_info">
+                            <group>
+                                <group string="Thanh toán">
+                                    <field name="voucher_code" invisible="1"/>
+                                    <field name="voucher_amount"/>
+                                    <field name="platform_voucher_amount"
+                                           invisible="platform_voucher_amount == False"/>
+                                </group>
+                                <group string="Điều vận">
+                                    <field name="tracking_no" readonly="1"/>
+                                    <field name="shipping_carrier" readonly="1"/>
+                                    <field name="days_to_ship" readonly="1"/>
+                                    <field name="ship_by_date" readonly="1"/>
+                                    <field name="session_id" readonly="1"/>
+                                </group>
+                                <group string="Địa chỉ">
+                                    <field name="country_name" invisible="country_id != False" readonly="1"/>
+                                    <field name="country_id" invisible="country_id == False" readonly="1"/>
+                                    <field name="state_name" invisible="state_id != False" readonly="1"/>
+                                    <field name="state_id" invisible="state_id == False" readonly="1"/>
+                                    <field name="district_name" invisible="district_id != False" readonly="1"/>
+                                    <field name="district_id" invisible="district_id == False" readonly="1"/>
+                                    <field name="ward_name" invisible="ward_id != False" readonly="1"/>
+                                    <field name="ward_id" invisible="ward_id == False" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Toàn trình" name="order_states">
+                            <button name="action_force_update_order_info" string="Cập nhật thông tin" type="object"
+                                    invisible="state in ('done', 'cancel') or last_sale_id"/>
+                            <field name="state_ids" nolabel="1" readonly="1">
+                                <tree editable="bottom" create="0" delete="0">
+                                    <field name="name"/>
+                                    <field name="source" widget="badge" decoration-info="source == 'api'"
+                                           decoration-success="source != 'api'"/>
+                                    <field name="update_time"/>
+                                    <field name="order_status" widget="badge"
+                                           decoration-info="order_status in ('UNPAID', 'TO_CONFIRM_RECEIVE', 'INVOICE_PENDING')"
+                                           decoration-warning="order_status in ('TO_PACK', 'TO_SHIP', 'RETRY_SHIP', 'TO_RETURN')"
+                                           decoration-primary="order_status in ('READY_TO_SHIP', 'PROCESSED')"
+                                           decoration-success="order_status in ('SHIPPED', 'COMPLETED')"
+                                           decoration-danger="order_status == 'INCIDENT'"
+                                           decoration-muted="order_status in ('IN_CANCEL', 'CANCELLED', 'RETURNED')"/>
+                                    <field name="response_data" groups="base.group_system" optional="hide"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="API">
+                            <group string="Hành động" invisible="1">
+                                <group>
+                                    <field name="last_state_id"/>
+                                </group>
+                                <group>
+
+                                </group>
+                            </group>
+                            <group string="Thông tin phản hồi" colspan="2">
+                                <field name="last_response_data" nolabel="1" colspan="2"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         ACTIONS
+         ======================================================================== -->
+    <record id="action_pic_ecommerce_order" model="ir.actions.act_window">
+        <field name="name">Đơn hàng TMĐT</field>
+        <field name="res_model">pic.ecommerce.order</field>
+        <field name="view_mode">tree,form,kanban,pivot,graph</field>
+        <field name="domain">[('config_type', '!=', 'company')]</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_order"/>
+        <field name="context">{
+            'create': False,
+            'edit': True,
+            'delete': True,
+            }
+        </field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo đơn hàng TMĐT đầu tiên
+            </p>
+            <p>
+                Đơn hàng sẽ được đồng bộ tự động từ các sàn thương mại điện tử.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_pic_ecommerce_order_company" model="ir.actions.act_window">
+        <field name="name">Đơn hàng TMĐT</field>
+        <field name="res_model">pic.ecommerce.order</field>
+        <field name="view_mode">tree,form,kanban,pivot,graph</field>
+        <field name="domain">[('config_type', '=', 'company')]</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_order"/>
+        <field name="context">{
+            'create': False,
+            'edit': True,
+            'delete': True,
+            }
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ========================================================================
+         SEARCH VIEW - Cấu hình sàn TMĐT
+         ======================================================================== -->
+    <record id="search_pic_ecommerce_config" model="ir.ui.view">
+        <field name="name">search.pic.ecommerce.config</field>
+        <field name="model">pic.ecommerce.config</field>
+        <field name="arch" type="xml">
+            <search string="Sàn thương mại điện tử">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="shop_id"/>
+                <field name="partner_id"/>
+
+                <filter string="Hoạt động" name="filter_active" domain="[('active', '=', True)]"/>
+                <filter string="Không hoạt động" name="filter_inactive" domain="[('active', '=', False)]"/>
+
+                <separator/>
+                <filter string="Có token" name="filter_has_token" domain="[('access_token', '!=', False)]"/>
+                <filter string="Thiếu token" name="filter_no_token" domain="[('access_token', '=', False)]"/>
+
+                <separator/>
+                <filter string="Môi trường Chính thức" name="filter_live" domain="[('environment', '=', 'live')]"/>
+                <filter string="Môi trường Thử nghiệm" name="filter_sandbox"
+                        domain="[('environment', '=', 'sandbox')]"/>
+
+                <separator/>
+                <filter string="B2B" name="filter_b2b" domain="[('business_model', '=', 'b2b')]"/>
+                <filter string="B2C" name="filter_b2c" domain="[('business_model', '=', 'b2c')]"/>
+
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Loại sàn" name="groupby_type" context="{'group_by': 'type'}"/>
+                    <filter string="Người phụ trách" name="groupby_user_id" context="{'group_by': 'user_id'}"/>
+                    <filter string="Trạng thái" name="groupby_active" context="{'group_by': 'active'}"/>
+                    <separator/>
+                    <filter string="Môi trường" name="groupby_environment" context="{'group_by': 'environment'}"/>
+                    <filter string="Mô hình KD" name="groupby_business_model" context="{'group_by': 'business_model'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         TREE VIEW - Cấu hình sàn TMĐT
+         ======================================================================== -->
+    <record id="tree_pic_ecommerce_config" model="ir.ui.view">
+        <field name="name">tree.pic.ecommerce.config</field>
+        <field name="model">pic.ecommerce.config</field>
+        <field name="arch" type="xml">
+            <tree string="Sàn thương mại điện tử" sample="1" decoration-muted="active == False">
+                <field name="complete_name"/>
+                <field name="code" optional="show"/>
+                <field name="business_model" widget="badge" decoration-info="business_model == 'b2b'"
+                       decoration-success="business_model == 'b2c'" optional="show"/>
+                <field name="environment" widget="badge" decoration-danger="environment == 'sandbox'"
+                       decoration-success="environment == 'live'" optional="hide"/>
+                <field name="shop_id" optional="hide"/>
+                <field name="type" widget="badge" decoration-info="1" optional="hide"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="date_start" optional="hide"/>
+                <field name="number_of_day" optional="hide"/>
+                <field name="fee_rate" widget="percentage" optional="hide"/>
+                <field name="partner_id" widget="res_partner_many2one"/>
+                <field name="partner_invoice_id" widget="res_partner_many2one" optional="hide"/>
+                <field name="partner_shipping_id" widget="res_partner_many2one" optional="hide"/>
+                <field name="source_id" optional="hide"/>
+                <field name="warehouse_id" optional="show"/>
+                <field name="payment_term_id" optional="hide"/>
+                <field name="pricelist_id" optional="hide"/>
+                <field name="active" widget="boolean_toggle" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         KANBAN VIEW - Cấu hình sàn TMĐT
+         ======================================================================== -->
+    <record id="kanban_pic_ecommerce_config" model="ir.ui.view">
+        <field name="name">kanban.pic.ecommerce.config</field>
+        <field name="model">pic.ecommerce.config</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" sample="1" quick_create="false">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="shop_id"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="active"/>
+                <field name="access_token"/>
+                <field name="expires_in"/>
+                <field name="business_model"/>
+                <field name="environment"/>
+
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click #{record.active.raw_value ? '' : 'o_kanban_record_muted'}">
+                            <div class="oe_kanban_content">
+                                <!-- Header -->
+                                <div class="o_kanban_record_top">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="o_kanban_record_subtitle text-muted">
+                                            <field name="type" widget="badge"/>
+                                            <field name="environment" widget="badge"
+                                                   decoration-danger="environment == 'sandbox'"
+                                                   decoration-success="environment == 'live'"/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </div>
+                                </div>
+
+                                <!-- Body -->
+                                <div class="o_kanban_record_body">
+                                    <div class="row" t-if="record.shop_id.raw_value">
+                                        <div class="col-12">
+                                            <span class="badge badge-pill badge-info">
+                                                <i class="fa-shopping-cart"/>
+                                                Shop:
+                                                <field name="shop_id"/>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <i class="fa fa-user"/>
+                                            <field name="partner_id"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <field name="business_model" widget="badge"
+                                                   decoration-info="business_model == 'b2b'"
+                                                   decoration-success="business_model == 'b2c'"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <t t-if="record.access_token.raw_value">
+                                                <span class="badge badge-success">
+                                                    <i class="fa fa-check"/>
+                                                    Có Token
+                                                </span>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="badge badge-warning">
+                                                    <i class="fa fa-exclamation-triangle"/>
+                                                    Thiếu Token
+                                                </span>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2" t-if="record.expires_in.raw_value">
+                                        <div class="col-12 text-muted small">
+                                            <i class="fa fa-clock-o"/>
+                                            Hết hạn:
+                                            <field name="expires_in" widget="date"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="user_id" widget="many2one_avatar_user"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <button type="object" name="action_get_access_token"
+                                                class="btn btn-sm btn-primary"
+                                                t-if="!record.access_token.raw_value and record.type.raw_value != 'company'">
+                                            <i class="fa fa-key"/>
+                                            Lấy Token
+                                        </button>
+                                        <button type="object" name="action_get_refresh_token"
+                                                class="btn btn-sm btn-success"
+                                                t-if="record.access_token.raw_value and record.type.raw_value != 'company'">
+                                            <i class="fa fa-refresh"/>
+                                            Refresh
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         FORM VIEW - Cấu hình sàn TMĐT
+         ======================================================================== -->
+    <record id="form_pic_ecommerce_config" model="ir.ui.view">
+        <field name="name">form.pic.ecommerce.config</field>
+        <field name="model">pic.ecommerce.config</field>
+        <field name="arch" type="xml">
+            <form string="Sàn thương mại điện tử">
+                <header>
+                    <button name="action_get_access_token" type="object" string="Nạp token" class="oe_highlight"
+                            invisible="not type" groups="base.group_system"/>
+                    <button name="action_get_refresh_token" type="object" string="Cập nhật token" class="oe_highlight"
+                            invisible="not type" groups="base.group_system"/>
+                    <button name="action_get_auth_url" type="object" string="Nạp URL" invisible="not type"
+                            groups="base.group_system"/>
+
+                    <button name="action_generate_child_config" type="object" string="Generate cấu hình con"
+                            invisible="not type or not ecommerce_ids or not has_child_config"
+                            groups="base.group_system"/>
+                </header>
+
+                <sheet>
+                    <!-- Button box -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_view_child" type="object"
+                                icon="fa-shopping-cart" invisible="child_count == 0">
+                            <field name="child_count" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="e.g. Shopee"/>
+                        </h1>
+                    </div>
+
+                    <!-- Main info -->
+                    <group string="Thông tin chung">
+                        <group>
+                            <field name="business_model" widget="radio" options="{'horizontal': true}" required="1"/>
+                            <field name="user_id" widget="many2one_avatar_user"
+                                   options="{'no_create': True, 'no_open': True}"/>
+                            <field name="type" decoration-bf="1"/>
+                            <field name="code" groups="base.group_system"/>
+                            <field name="has_child_config" widget="boolean_toggle" groups="base.group_system"/>
+                            <field name="ecommerce_ids" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="environment" widget="radio" options="{'horizontal': true}" required="1"
+                                   groups="base.group_system"/>
+                            <field name="parent_id" options="{'no_create': True, 'no_open': True}" decoration-info="1"
+                                   groups="base.group_system"/>
+                            <field name="number_of_day"/>
+                            <field name="fee_rate" widget="percentage"/>
+                            <field name="date_start"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <!-- Notebook -->
+                    <notebook>
+                        <page string="Thông tin mặc định">
+                            <group>
+                                <group string="Quy trình xử lý">
+                                    <field name="auto_create_sale_order" widget="boolean_toggle"/>
+                                    <field name="auto_confirm_sale_order" widget="boolean_toggle"/>
+                                    <div class="alert alert-warning" role="alert" colspan="2">
+                                        <i class="fa fa-exclamation-triangle"/>
+                                        <strong>Cảnh báo:</strong>
+                                        Chế độ tự động tạo đơn đang BẬT.
+                                        Đảm bảo dữ liệu từ sàn đã ổn định trước khi sử dụng.
+                                    </div>
+                                </group>
+                                <group string="Sản phẩm chi phí">
+                                    <field name="voucher_cost_product_id"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="gift_cost_product_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="ship_cost_product_id" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+                            <group string="Thông tin bán hàng">
+                                <group>
+                                    <field name="partner_id" widget="res_partner_many2one"
+                                           required="business_model == 'b2b'"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="partner_invoice_id" widget="res_partner_many2one"
+                                           context="{'default_type':'invoice', 'show_address': False, 'show_vat': False}"
+                                           required="business_model == 'b2b'"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="partner_shipping_id" widget="res_partner_many2one"
+                                           required="business_model == 'b2b'"
+                                           context="{'default_type':'delivery', 'show_address': False, 'show_vat': False}"
+                                           invisible="business_model == 'b2c'"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="payment_term_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <!--domain="['|', ('id', '=', partner_id), '&amp;', ('type', '=', 'invoice'), ('parent_id', '=', partner_id)]"-->
+                                    <!--domain="['|', ('id', '=', partner_id), '&amp;', ('type', '=', 'delivery'), ('parent_id', '=', partner_id)]"-->
+                                </group>
+                                <group>
+                                    <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="warehouse_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="pricelist_id" options="{'no_create': True, 'no_open': True}"/>
+                                </group>
+                            </group>
+                            <div class="alert alert-info" role="alert" invisible="business_model != 'b2c'">
+                                <i class="fa fa-info-circle"/>
+                                <strong>Lưu ý B2C:</strong>
+                                Địa chỉ giao hàng và xuất hóa đơn sẽ được lấy từ thông tin người mua trên đơn hàng TMĐT.
+                            </div>
+                        </page>
+
+                        <page string="Cấu hình kết nối API">
+                            <group string="Thông tin đăng ký" name="shop_info">
+                                <field name="shop_id" required="type"/>
+                                <field name="live_partner_key" invisible="not type" required="type"
+                                       groups="base.group_system"/>
+                                <field name="live_key" invisible="not type" required="type" groups="base.group_system"/>
+                            </group>
+
+                            <group name="oauth_info" string="Thông tin lấy token" invisible="not type"
+                                   groups="base.group_system">
+                                <field name="oauth_url" widget="url"/>
+                                <field name="oauth_code"/>
+                            </group>
+
+                            <group string="Thông tin token" invisible="not type" groups="base.group_system">
+                                <field name="access_token"/>
+                                <field name="refresh_token"/>
+                                <field name="expires_in"/>
+                                <field name="refresh_expires_in"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========================================================================
+         ACTIONS
+         ======================================================================== -->
+    <record id="action_pic_ecommerce_config" model="ir.actions.act_window">
+        <field name="name">Sàn thương mại điện tử</field>
+        <field name="res_model">pic.ecommerce.config</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="search_pic_ecommerce_config"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo cấu hình sàn TMĐT đầu tiên
+            </p>
+            <p>
+                Cấu hình kết nối đến các sàn thương mại điện tử như Shopee, Lazada, TikTok...
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu item -->
+    <menuitem id="menu_pic_ecommerce_config" parent="pic_ecommerce_base.menu_pic_ecommere_configuration"
+              name="Sàn thương mại điện tử" action="action_pic_ecommerce_config"
+              sequence="40" groups="base.group_no_one"/>
+</odoo>

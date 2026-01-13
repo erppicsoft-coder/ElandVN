@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <record id="view_order_form_pic_ecommerce" model="ir.ui.view">
+            <field name="name">view_order_form_pic_ecommerce</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name="date_order" position="after">
+                    <field name="ecommerce_id" readonly="1" invisible="not ecommerce_id or pic_tracking_url"/>
+                    <field name="ecommerce_order_status" invisible="1"/>
+                    <field name="config_type" invisible="1"/>
+                </field>
+                <button name="action_confirm" position="before">
+                    <button name="attachment_airway_bill" type="object" string="Lấy file đính kèm"
+                            invisible="config_type == 'company' or state not in ('draft', 'sent') or ecommerce_order_status not in ('TO_SHIP', 'READY_TO_SHIP')"/>
+                    <button name="action_to_ship" type="object" string="POST TO SHIP"
+                            invisible="config_type == 'company' or state not in ('sale', 'done') or ecommerce_order_status not in ('TO_SHIP')"/>
+                </button>
+
+                <field name="note" position="after">
+                    <field name="pic_tracking_url" readonly="1" colspan="2" widget="url"
+                           invisible="not pic_tracking_url" nolabel="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_sales_order_filter_pic_ecommerce" model="ir.ui.view">
+            <field name="name">view_sales_order_filter_pic_ecommerce</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="attributes">
+                    <attribute name="filter_domain">['|', '|', '|', '|', ('name', 'ilike', self), ('client_order_ref',
+                        'ilike', self), ('partner_id', 'child_of', self), ('ecommerce_id.name', 'ilike', self),
+                        ('carrier_tracking_ref', 'ilike', self)]
+                    </attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

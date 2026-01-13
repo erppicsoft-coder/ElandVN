@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+pic_ecommerce_order_type_user,pic.ecommerce.order.type,model_pic_ecommerce_order_type,base.group_user,1,1,1,1
+pic_ecommerce_shop_user,pic.ecommerce.shop.user,model_pic_ecommerce_shop,base.group_user,1,1,1,1

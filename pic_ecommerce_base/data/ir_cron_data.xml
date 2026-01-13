@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Cron 1: Tạo session và đồng bộ data -->
+        <record id="ir_cron_pic_ecommerce" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Tạo phiên đồng bộ</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_create_pic_ecommerce_session()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+         <!-- Cron 1.5: Auto confirm orders (draft → validate/confirm) -->
+        <record id="ir_cron_pic_ecommerce_auto_confirm" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Tự động tiếp nhận đơn</field>
+            <field name="model_id" ref="model_pic_ecommerce_order"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_auto_confirm_orders()</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron 2: Tạo Sale Order từ orders đã confirm -->
+        <record id="ir_cron_pic_ecommerce_sale_order" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Tạo đơn hàng bán</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_create_sale_order()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron 3: Confirm Sale Order -->
+        <record id="ir_cron_pic_ecommerce_confirm_order" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Xác nhận đơn hàng bán</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_confirm_sale_order()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron 4: Cập nhật kết quả giao hàng -->
+        <record id="ir_cron_pic_ecommerce_payment" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Cập nhật kết quả giao hàng</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_update_delivery_result()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron 5: Đính kèm vận đơn -->
+        <record id="ir_cron_pic_ecommerce_attach_awb_order" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Đính kèm vận đơn</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_attach_awb_order()</field>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+
+        <!-- Cron 6: Xử lý đơn TO_PACK -->
+        <record id="ir_cron_pic_ecommerce_to_pack" model="ir.cron">
+            <field name="name">Tích hợp sàn TMĐT: Xử lý đơn TO_PACK</field>
+            <field name="model_id" ref="model_pic_ecommerce_session"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_action_to_pack()</field>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>
